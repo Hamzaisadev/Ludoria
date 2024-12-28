@@ -5,7 +5,6 @@ import { TiLocationArrow } from "react-icons/ti";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import Button from "./Button";
-import { debounce } from "../utils/debounce";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,6 +24,12 @@ const Hero = () => {
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (loadedVideos === totalVideos) {
+      setLoading(false);
+    }
+  }, [loadedVideos]);
 
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
@@ -59,6 +64,14 @@ const Hero = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    return () => clearTimeout(timer); // Cleanup the timer on component unmount
+  }, []);
+
   useGSAP(
     () => {
       if (hasClicked) {
@@ -72,7 +85,6 @@ const Hero = () => {
           ease: "power1.inOut",
           onStart: () => nextVdRef.current.play(),
           onComplete: () => {
-            // Preload the next video before switching
             const newSrc = getVideoSrc(currentIndex);
             const tempVideo = document.createElement("video");
             tempVideo.src = newSrc;
@@ -101,7 +113,6 @@ const Hero = () => {
     }
   );
 
-  // Ensure mini player remains visible
   useEffect(() => {
     if (miniVdRef.current) {
       miniVdRef.current.classList.remove("fade-out");
@@ -132,84 +143,105 @@ const Hero = () => {
     <div className="relative h-dvh w-screen overflow-x-hidden">
       {loading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
-          {/* https://uiverse.io/G4b413l/tidy-walrus-92 */}
-          <div className="three-body">
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
+          <div>
+            <div className="container">
+              <div className="dot dot-1" />
+              <div className="dot dot-2" />
+              <div className="dot dot-3" />
+            </div>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="goo">
+                  <feGaussianBlur
+                    result="blur"
+                    stdDeviation={10}
+                    in="SourceGraphic"
+                  />
+                  <feColorMatrix
+                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 21 -7"
+                    mode="matrix"
+                    in="blur"
+                  />
+                </filter>
+              </defs>
+            </svg>
           </div>
         </div>
       )}
 
-      <div
-        id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75"
-      >
-        <div>
-          <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-            <div
-              onClick={handleMiniVdClick}
-              className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-            >
+      {!loading && (
+        <>
+          <div
+            id="video-frame"
+            className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75"
+          >
+            <div>
+              <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
+                <div
+                  onClick={handleMiniVdClick}
+                  className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
+                >
+                  <video
+                    ref={miniVdRef}
+                    src={getVideoSrc((currentIndex % totalVideos) + 1)}
+                    loop
+                    muted
+                    id="current-video"
+                    className="size-64 origin-center scale-150 object-cover object-center transition-opacity duration-500 ease-in-out"
+                    onLoadedData={handleVideoLoad}
+                  />
+                </div>
+              </div>
+
               <video
-                ref={miniVdRef}
-                src={getVideoSrc((currentIndex % totalVideos) + 1)}
+                ref={nextVdRef}
+                src={getVideoSrc(currentIndex)}
                 loop
                 muted
-                id="current-video"
-                className="size-64 origin-center scale-150 object-cover object-center transition-opacity duration-500 ease-in-out"
+                id="next-video"
+                className="absolute-center invisible absolute z-20 size-64 object-cover object-center transition-opacity duration-500 ease-in-out"
+                onLoadedData={handleVideoLoad}
+              />
+              <video
+                ref={bgVdRef}
+                src={getVideoSrc(1)}
+                autoPlay
+                loop
+                muted
+                className="absolute left-0 top-0 size-full object-cover object-center"
                 onLoadedData={handleVideoLoad}
               />
             </div>
-          </div>
 
-          <video
-            ref={nextVdRef}
-            src={getVideoSrc(currentIndex)}
-            loop
-            muted
-            id="next-video"
-            className="absolute-center invisible absolute z-20 size-64 object-cover object-center transition-opacity duration-500 ease-in-out"
-            onLoadedData={handleVideoLoad}
-          />
-          <video
-            ref={bgVdRef}
-            src={getVideoSrc(1)}
-            autoPlay
-            loop
-            muted
-            className="absolute left-0 top-0 size-full object-cover object-center"
-            onLoadedData={handleVideoLoad}
-          />
-        </div>
-
-        <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">
-          G<b>A</b>MING
-        </h1>
-
-        <div className="absolute left-0 top-0 z-40 size-full">
-          <div className="mt-24 px-5 sm:px-10">
-            <h1 className="special-font hero-heading text-blue-100">
-              redefi<b>n</b>e
+            <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">
+              G<b>A</b>MING
             </h1>
 
-            <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
-              Enter the Metagame Layer <br /> Unleash the Play Economy
-            </p>
+            <div className="absolute left-0 top-0 z-40 size-full">
+              <div className="mt-24 px-5 sm:px-10">
+                <h1 className="special-font hero-heading text-blue-100">
+                  redefi<b>n</b>e
+                </h1>
 
-            <Button
-              id="watch-trailer"
-              title="Watch trailer"
-              leftIcon={<TiLocationArrow />}
-              containerClass="bg-yellow-300 flex-center gap-1"
-            />
+                <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
+                  Enter the Metagame Layer <br /> Unleash the Play Economy
+                </p>
+
+                <Button
+                  id="watch-trailer"
+                  title="Watch trailer"
+                  leftIcon={<TiLocationArrow />}
+                  containerClass="bg-yellow-300 flex-center gap-1"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
-        G<b>A</b>MING
-      </h1>
+          <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
+            G<b>A</b>MING
+          </h1>
+        </>
+      )}
     </div>
   );
 };
