@@ -5,8 +5,9 @@ const About = () => {
     <div className="" id="about">
       <div className="relative mb-8 mt-36 flex flex-col">
         <h2 className="font-general text-sm uppercase md:text-[10px]">
-          Welcome To Arcane h
+          Welcome To Arcane
         </h2>
+        <div>Dis</div>
       </div>
     </div>
   );
