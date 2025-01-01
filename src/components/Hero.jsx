@@ -144,7 +144,7 @@ const Hero = () => {
       {loading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div>
-            <div className="container">
+            <div className="loadingContainer">
               <div className="dot dot-1" />
               <div className="dot dot-2" />
               <div className="dot dot-3" />

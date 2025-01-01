@@ -271,7 +271,7 @@ body {
   }
 }
 
-.container {
+.loadingContainer {
   width: 200px;
   height: 200px;
   position: absolute;
