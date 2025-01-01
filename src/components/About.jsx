@@ -26,7 +26,7 @@ const About = () => {
   });
 
   return (
-    <div className="min-h-screen w-screen" id="about">
+    <div className="min-h-screen w-screen" id="chronicles">
       <div className="relative mb-8 mt-36 flex flex-col  items-center gap-5">
         <h2 className="font-general text-sm uppercase md:text-[10px]">
           Welcome To Arcane
