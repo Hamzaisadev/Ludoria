@@ -4,7 +4,7 @@ import { TiLocationArrow } from "react-icons/ti";
 import { useWindowScroll } from "react-use";
 import gsap from "gsap";
 
-const navItems = ["The Nexus", "Chronicles", "The Forge", "Convene"];
+const navItems = ["The Nexus", "Chronicles", "The Forge", "Saga"];
 
 const Navbar = () => {
   const navContainerRef = useRef(null);
