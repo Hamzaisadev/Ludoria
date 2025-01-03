@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 
-export const BentoCard = ({ src, title, description, isComingSoon }) => {
+const BentoCard = ({ src, title, description, isComingSoon }) => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [hoverOpacity, setHoverOpacity] = useState(0);
   const hoverButtonRef = useRef(null);
@@ -60,3 +60,4 @@ export const BentoCard = ({ src, title, description, isComingSoon }) => {
     </div>
   );
 };
+export default BentoCard;
